@@ -34,12 +34,12 @@ public class FunctionSet {
     // PARAMETERS OF THE TASK
     private static double[][] d = new double[][]{{3, 5}, {1, 6}}; /* matrix of borders of allowed values of x
                                                                     (example: d[1][1] <= x[1] <= d[1][2]) */
-    private static double[] p = new double[]{0.5, 0.5}; // vector of probability levels (alpha_i)
+    private static double[] p = new double[]{0.98, 0.98}; // vector of probability levels (alpha_i)
     private static double[][] EA = new double[][]{{12, 14}, {16, 12}}; // expectancy of coefficient matrix A
     private static double[][] DA = new double[][]{{3, 4}, {5, 4}}; // dispersion of coefficient matrix A
     private static double[] Eb = new double[]{140, 160}; // expectancy of vector b
     private static double[] Db = new double[]{8, 10}; // dispersion of vector b
-    private static double r = 1; // coefficient of penalty function
+    private static double r = 2; // coefficient of penalty function
 
     /**
      * Multiply r by 2
@@ -75,36 +75,40 @@ public class FunctionSet {
         double limitFunctionsSum  = 0;
         for (double GItem: G) {
             if (GItem > 0)
-                limitFunctionsSum += GItem;
+                limitFunctionsSum += GItem * GItem;
         }
-        return f(x) + r * limitFunctionsSum;
+        return f(x) - r * limitFunctionsSum;
     }
 
     public static double[] NewGradient(double[] x) {
         double[] gradfunction = gradf(x);
-        double grad0 = gradfunction[0];
-        double grad1 = gradfunction[1];
+        double grad0 = 0;
+        double grad1 = 0;
         double[] G = LimitFunctions(x);
         if(G[0] >= 0) {
-            grad0 += r * EA[0][0] + ReverseNormalFunction(p[0]) * Math.pow(DA[0][0], 2) * x[0] /
+            grad0 += r * 2 * G[0] * EA[0][0] + ReverseNormalFunction(p[0]) * Math.pow(DA[0][0], 2) * x[0] /
                     Math.sqrt(Math.pow(DA[0][0] * x[0], 2) + Math.pow(DA[0][1] * x[1], 2) + Math.pow(Db[0], 2));
-            grad1 += r * EA[0][1] + ReverseNormalFunction(p[0]) * Math.pow(DA[0][1], 2) * x[1] /
+            grad1 += r * 2 * G[0] * EA[0][1] + ReverseNormalFunction(p[0]) * Math.pow(DA[0][1], 2) * x[1] /
                     Math.sqrt(Math.pow(DA[0][0] * x[0], 2) + Math.pow(DA[0][1] * x[1], 2) + Math.pow(Db[0], 2));
         }
         if (G[1] >= 0) {
-            grad0 += r * EA[1][0] + ReverseNormalFunction(p[1]) * Math.pow(DA[1][0], 2) * x[0] /
+            grad0 += r * 2 * G[1] * EA[1][0] + ReverseNormalFunction(p[1]) * Math.pow(DA[1][0], 2) * x[0] /
                     Math.sqrt(Math.pow(DA[1][0] * x[0], 2) + Math.pow(DA[1][1] * x[1], 2) + Math.pow(Db[1], 2));
-            grad1 += r * EA[1][1] + ReverseNormalFunction(p[1]) * Math.pow(DA[1][1], 2) * x[1] /
+            grad1 += r * 2 * G[1] * EA[1][1] + ReverseNormalFunction(p[1]) * Math.pow(DA[1][1], 2) * x[1] /
                     Math.sqrt(Math.pow(DA[1][0] * x[0], 2) + Math.pow(DA[1][1] * x[1], 2) + Math.pow(Db[1], 2));
         }
         if (G[2] >= 0)
-            grad0 += -r;
+            grad0 += -r * 2 * G[2];
         if (G[3] >= 0)
-            grad0 += r;
+            grad0 += r * 2 * G[3];
         if (G[4] >= 0)
-            grad1 += -r;
+            grad1 += -r * 2 * G[4];
         if (G[5] >= 0)
-            grad1 += r;
+            grad1 += r * 2 * G[5];
+        grad0 *= -1;
+        grad1 *= -1;
+        grad0 += gradfunction[0];
+        grad1 += gradfunction[1];
         return new double[]{grad0, grad1};
     }
 
