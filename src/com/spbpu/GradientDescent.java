@@ -23,7 +23,7 @@ public class GradientDescent {
 
         while (norm2(grad) > eps) {
             // get new point x_new = x - step * grad
-            GetNewPointSplitting(x, grad, x_new, function, eps2);
+            step = GetNewPointSplitting(x, grad, x_new, function, eps2);
             //System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
 
             // x = x_new
@@ -53,14 +53,15 @@ public class GradientDescent {
         return (left + right) / 2;
     }
 
-    private static void GetNewPointSplitting(double[] x, double[] grad, double[] x_new, Function function, double eps) {
+    private static double  GetNewPointSplitting(double[] x, double[] grad, double[] x_new, Function function, double eps) {
         boolean exitCondition1, exitCondition2;
-        double step = 2;
+        double step = 1024;
         do {
             step /= 2;
             System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
             exitCondition1 = function.f(x_new) - function.f(x) < -eps * norm2(grad) * step;
             exitCondition2 = Math.abs(-eps * norm2(grad) * step) < Math.pow(10, -15);
         } while (!exitCondition1 && !exitCondition2);
+        return step;
     }
 }
