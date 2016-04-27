@@ -17,20 +17,21 @@ public class GradientDescent {
     public static int Optimize(double[] x, Function function, Gradient gradient, double eps, double eps2) {
         double[] x_new = new double[x.length];
         double[] grad = gradient.gradf(x);
-        double[] x1 = new double[x.length], x2 = new double[x.length]; // step vectors
+        //double[] x1 = new double[x.length], x2 = new double[x.length]; // step vectors
         double step;
         int iCount = 0;
 
         while (norm2(grad) > eps) {
             // get new point x_new = x - step * grad
-            step = GetNewPointSplitting(x, grad, x_new, function, eps2);
-            System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
+            GetNewPointSplitting(x, grad, x_new, function, eps2);
+            //System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
 
             // x = x_new
             System.arraycopy(x_new, 0, x, 0, x_new.length);
             grad = gradient.gradf(x);
             /*System.out.print(iCount); System.out.print("-й шаг. Градиент: "); System.out.println(norm2(grad));
             System.out.print(x[0]); System.out.print(" "); System.out.println(x[1]);*/
+            ++iCount;
         }
         return iCount;
     }
@@ -52,7 +53,7 @@ public class GradientDescent {
         return (left + right) / 2;
     }
 
-    private static double GetNewPointSplitting(double[] x, double[] grad, double[] x_new, Function function, double eps) {
+    private static void GetNewPointSplitting(double[] x, double[] grad, double[] x_new, Function function, double eps) {
         boolean exitCondition1, exitCondition2;
         double step = 2;
         do {
@@ -61,6 +62,5 @@ public class GradientDescent {
             exitCondition1 = function.f(x_new) - function.f(x) < -eps * norm2(grad) * step;
             exitCondition2 = Math.abs(-eps * norm2(grad) * step) < Math.pow(10, -15);
         } while (!exitCondition1 && !exitCondition2);
-        return step;
     }
 }

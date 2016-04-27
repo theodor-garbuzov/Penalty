@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PenaltyMethod.iml" filepath="$PROJECT_DIR$/PenaltyMethod.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Penalty.iml" filepath="$PROJECT_DIR$/Penalty.iml" />
     </modules>
   </component>
 </project>
