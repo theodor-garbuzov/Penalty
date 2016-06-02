@@ -22,30 +22,25 @@ public class GradientDescent {
         int iCount = 0;
 
         while (norm2(grad) > eps && iCount < 100) {
-            // get new point x_new = x - step * grad
-            step = GetNewPointSplitting(x, grad, x_new, function, eps2);
-            //System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
-
-            // x = x_new
-            System.arraycopy(x_new, 0, x, 0, x_new.length);
+            step = GetNewStepDichotomy(x, grad, x_new, function, eps2);
+            System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
+            System.out.println("step: " + step);
+            System.arraycopy(x_new, 0, x, 0, x.length);
             grad = gradient.gradf(x);
-            /*System.out.print(iCount); System.out.print("-й шаг. Градиент: "); System.out.println(norm2(grad));
-            System.out.print(x[0]); System.out.print(" "); System.out.println(x[1]);*/
+            System.out.print(iCount+1); System.out.print("-й шаг. Градиент: "); System.out.println(norm2(grad));
+            System.out.println(x[0] + " " + x[1] + " " + x[2]);
             ++iCount;
-            if (iCount == 90)
-                iCount += 1;
         }
         return iCount;
     }
 
-    private static double GetNewStepDichotomy(double[] x, double[] grad, double[] x_new, Function function, double eps, int[] fCount) {
-        double left = 0, right = 5; // начальный интервал неопределённости шага
+    private static double GetNewStepDichotomy(double[] x, double[] grad, double[] x_new, Function function, double eps) {
+        double left = 0, right = 2; // начальный интервал неопределённости шага
         double step1, step2;
         double delta = eps / 20;
         while (right - left > eps) {
             step1 = (left + right) / 2 - delta;
             step2 = (left + right) / 2 + delta;
-            fCount[0] += 2;
             if (function.f(VectorSum(x, NumberVectorMult(-step1, grad))) > function.f(VectorSum(x, NumberVectorMult(-step2, grad))))
                 left = step1;
             else
@@ -60,9 +55,11 @@ public class GradientDescent {
         double step = 16;
         do {
             step /= 2;
-            System.arraycopy(VectorSum(x, NumberVectorMult(step, grad)), 0, x_new, 0, x_new.length);
-            exitCondition1 = function.f(x_new) - function.f(x) > eps * norm2(grad) * step;
-            exitCondition2 = Math.abs(eps * norm2(grad) * step) < Math.pow(10, -15);
+            System.arraycopy(VectorSum(x, NumberVectorMult(-step, grad)), 0, x_new, 0, x_new.length);
+            exitCondition1 = function.f(x_new) - function.f(x) < -eps * norm2(grad) * step;
+            exitCondition2 = Math.abs(eps * norm2(grad) * step) < Math.pow(10, -14);
+            if (exitCondition2)
+                exitCondition2 = false;
         } while (!exitCondition1 && !exitCondition2);
         return step;
     }
